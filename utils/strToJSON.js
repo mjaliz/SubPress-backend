@@ -1,3 +1,4 @@
+console.log(__dirname);
 const fs = require("fs");
 
 const timeToMillisecond = (time) => {
@@ -11,7 +12,18 @@ const timeToMillisecond = (time) => {
   return timestamp;
 };
 
-fs.readFile("demo2-fa.srt", "utf8", (err, data) => {
+const timeSecond = (time) => {
+  const [hh, mm, ss, ms] = time.split(":");
+  const timestamp =
+    parseInt(hh) * 3600 +
+    parseInt(mm) * 60 +
+    parseInt(ss) +
+    parseInt(ms) * 0.001;
+
+  return timestamp;
+};
+
+fs.readFile(__dirname + "\\..\\assets\\demo2-en.srt", "utf8", (err, data) => {
   if (err) {
     console.error(err);
     return;
@@ -33,14 +45,15 @@ fs.readFile("demo2-fa.srt", "utf8", (err, data) => {
 
     const times = dataArray[i].split(" --> ");
     if (times.length === 2) {
-      let startTime = times[0].trim().slice(0, -1);
+      let startTime = times[0].trim();
       let endTime = times[1].trim().slice(0, -1);
       startTimes.push(startTime);
       startTime = startTime.replace(",", ":");
       endTime = endTime.replace(",", ":");
-      startTimestamp = timeToMillisecond(startTime);
+      const startTimestamp = timeToMillisecond(startTime);
       endTimestamp = timeToMillisecond(endTime);
       const duration = endTimestamp - startTimestamp;
+      subtitles[j].startTime = timeSecond(startTime);
       subtitles[j].duration = duration;
       continue;
     }
@@ -64,8 +77,8 @@ fs.readFile("demo2-fa.srt", "utf8", (err, data) => {
   const newStartTimes = startTimes.slice(4, startTimes.length);
 
   fs.writeFile(
-    "startTime-fa.json",
-    JSON.stringify(newStartTimes),
+    "startTime.json",
+    JSON.stringify(startTimes),
     { flag: "wx" },
     function (err) {
       if (err) {
@@ -76,8 +89,8 @@ fs.readFile("demo2-fa.srt", "utf8", (err, data) => {
   );
 
   fs.writeFile(
-    "subtitle-fa.json",
-    JSON.stringify(newSubtitles),
+    "subtitle.json",
+    JSON.stringify(subtitles),
     { flag: "wx" },
     function (err) {
       if (err) {
