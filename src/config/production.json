@@ -1,0 +1,6 @@
+{
+    "name": "FilmiLearn - Prod",
+    "mail": {
+        "host": "prod-main-server"
+    }
+}
