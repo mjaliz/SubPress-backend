@@ -50,12 +50,12 @@ fs.readFile(__dirname + "\\..\\assets\\demo2-en.srt", "utf8", (err, data) => {
       startTimes.push(startTime);
       startTime = startTime.replace(",", ":");
       endTime = endTime.replace(",", ":");
-      const startTimestamp = timeSecond(startTime);
-      const endTimestamp = timeSecond(endTime);
-      const duration = endTimestamp - startTimestamp;
+      const startTimestamp = timeToMillisecond(startTime);
+      const endTimestamp = timeToMillisecond(endTime);
+      const duration = Math.abs(endTimestamp - startTimestamp);
       subtitles[j].startTime = timeSecond(startTime);
       subtitles[j].duration = duration;
-      subtitles[j].endTime = timeSecond(startTime) + duration;
+      subtitles[j].endTime = timeSecond(startTime) + duration / 1000;
       continue;
     }
     const text = dataArray[i];

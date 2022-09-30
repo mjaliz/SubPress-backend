@@ -10,6 +10,10 @@ const flashCardSchema = new mongoose.Schema({
     type: srcSchema,
     default: {},
   },
+  status: {
+    type: String,
+    default: "selected",
+  },
   front: [String],
   back: [String],
 });

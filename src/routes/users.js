@@ -40,4 +40,14 @@ router.get("/selectedWord", async (req, res) => {
   res.send(flashCards);
 });
 
+router.patch("/selectedWord", async (req, res) => {
+  const flashCardId = req.body.id;
+  const status = req.body.status;
+  await User.updateOne(
+    { "flashCards._id": flashCardId },
+    { $set: { "flashCards.$.status": status } }
+  );
+  res.send({ id: flashCardId });
+});
+
 module.exports = router;

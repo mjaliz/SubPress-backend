@@ -16,7 +16,7 @@ module.exports = function (app) {
     app.use(morgan("tiny"));
     startupDebugger("Morgan enabled...");
   }
-  app.use("/users", users);
+  app.use("/api/users", users);
 
   app.get("/video/:id", function (req, res) {
     console.log(req.params.id);
