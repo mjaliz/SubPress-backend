@@ -2,5 +2,6 @@
     "name": "FilmiLearn - Dev",
     "mail": {
         "host": "dev-main-server"
-    }
+    },
+    "jwtPrivateKey": "unsecurePrivateKey"
 }

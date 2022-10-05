@@ -1,20 +1,33 @@
-const User = require("../models/user");
+const bcrypt = require("bcrypt");
+const _ = require("lodash");
+const { User, joiSchema } = require("../models/user");
 const express = require("express");
 const router = express.Router();
 
 router.post("/", async (req, res) => {
-  const user = new User({
-    name: req.body.name,
-    email: req.body.email,
-  });
+  const { error } = joiSchema.validate(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
 
+  let user = await User.findOne({ email: req.body.email });
+  if (user) return res.status(400).send("User already registered.");
+
+  user = new User(_.pick(req.body, ["name", "email", "password"]));
+  const salt = await bcrypt.genSalt(10);
+  user.password = await bcrypt.hash(user.password, salt);
   await user.save();
-  res.send(user);
+
+  const token = user.generateAuthToken();
+  user.token = token;
+
+  res
+    .header("x-auth-token", token)
+    .header("access-control-expose-headers", "x-auth-token")
+    .send(_.pick(user, ["_id", "name", "email", "token"]));
 });
 
 router.post("/selectedWord", async (req, res) => {
   const items = req.body;
-  let user = await User.findOne({ _id: "63255fb632ee5573a71d5c9c" });
+  let user = await User.findById(req.body.userId);
   if (!user) return res.status(400).send("User not found");
   const flashCard = {
     src: {
@@ -27,16 +40,13 @@ router.post("/selectedWord", async (req, res) => {
   };
   console.log(flashCard);
   user.flashCards.push(flashCard);
-  user.items.selectedWords.push(items.flashCard.front[0]);
   user.save();
-  res.send(user);
+  res.send(_.pick(user, ["flashCards"]));
 });
 
 router.get("/selectedWord", async (req, res) => {
-  const flashCards = await User.findOne({
-    _id: "63255fb632ee5573a71d5c9c",
-  }).select("flashCards");
-  console.log(flashCards);
+  let flashCards = await User.findById(req.query.userId).select("flashCards");
+  if (!flashCards) flashCards = [];
   res.send(flashCards);
 });
 
