@@ -19,7 +19,7 @@ module.exports = function (app) {
   }
   app.use("/api/users", users);
 
-  app.get("/video/:id", function (req, res) {
+  app.get("/api/video/:id", function (req, res) {
     console.log(req.params.id);
     const range = req.headers.range;
     if (!range) {
