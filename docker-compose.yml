@@ -1,0 +1,33 @@
+version: "3"
+
+services:
+  mongo:
+    image: mongo:6.0.2
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=$MONGODB_USER
+      - MONGO_INITDB_ROOT_PASSWORD=$MONGODB_PASSWORD
+    ports:
+      - $MONGODB_LOCAL_PORT:$MONGODB_DOCKER_PORT
+    command: mongod
+    volumes:
+      - ./mongo:/data/db
+    restart: always
+  mongo-express:
+    image: mongo-express:1.0.0-alpha.4
+    environment:
+      - ME_CONFIG_MONGODB_URL=mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@mongo
+      - ME_CONFIG_MONGODB_SERVER=mongo
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_MONGODB_AUTH_DATABASE=admin
+      - ME_CONFIG_MONGODB_AUTH_USERNAME=${MONGODB_USER}
+      - ME_CONFIG_MONGODB_AUTH_PASSWORD=${MONGODB_PASSWORD}
+      - ME_CONFIG_BASICAUTH_USERNAME=${MONGOEXPRESS_LOGIN}
+      - ME_CONFIG_BASICAUTH_PASSWORD=${MONGOEXPRESS_PASSWORD}
+    depends_on:
+      - mongo
+    ports:
+      - "8888:8081"
+    restart: always
+
+volumes:
+  db:

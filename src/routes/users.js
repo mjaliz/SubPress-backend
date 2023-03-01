@@ -1,4 +1,4 @@
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const _ = require("lodash");
 const { User, joiSchema } = require("../models/user");
 const express = require("express");
